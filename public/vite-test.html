@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Vite + Laravel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+        }
+        .config-card {
+            background: linear-gradient(145deg, #1e293b, #334155);
+            border: 1px solid #475569;
+        }
+        .success-check {
+            color: #10b981;
+        }
+        .warning-check {
+            color: #f59e0b;
+        }
+        .error-check {
+            color: #ef4444;
+        }
+        pre {
+            background-color: #1e293b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        code {
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-2 text-indigo-400">Diagnostic Vite + Laravel</h1>
+        <p class="text-center text-gray-400 mb-8">Vérifiez votre configuration pour résoudre l'erreur 404</p>
+        
+        <div class="config-card rounded-xl p-6 mb-8 shadow-lg">
+            <h2 class="text-xl font-semibold mb-4 text-indigo-300">Votre configuration Vite</h2>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <span class="success-check mr-2">✓</span>
+                    <span class="font-medium">Hôte et port</span>
+                </div>
+                <p class="text-gray-400 text-sm ml-6">Votre serveur Vite est configuré sur <code>localhost:5173</code></p>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <span class="warning-check mr-2">⚠</span>
+                    <span class="font-medium">Configuration CORS</span>
+                </div>
+                <p class="text-gray-400 text-sm ml-6">Vérifiez que votre application Laravel est bien servie sur <code>http://localhost:8000</code> ou <code>http://localhost:9000</code></p>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <span class="success-check mr-2">✓</span>
+                    <span class="font-medium">Point d'entrée</span>
+                </div>
+                <p class="text-gray-400 text-sm ml-6">Votre point d'entrée est configuré sur <code>resources/js/app.js</code></p>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <span class="success-check mr-2">✓</span>
+                    <span class="font-medium">Alias</span>
+                </div>
+                <p class="text-gray-400 text-sm ml-6">L'alias <code>@</code> est configuré vers <code>/resources/js</code></p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4 text-green-400">Étapes de vérification</h3>
+                <ul class="list-disc list-inside text-gray-400 space-y-2">
+                    <li>Lancez <code>npm run dev</code> pour démarrer Vite</li>
+                    <li>Vérifiez que le port 5173 n'est pas utilisé par autre chose</li>
+                    <li>Assurez-vous que votre application Laravel utilise bien le bon URL</li>
+                    <li>Vérifiez la console navigateur pour les erreurs de chargement d'assets</li>
+                </ul>
+            </div>
+            
+            <div class="bg-gray-800 rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4 text-red-400">Causes possibles d'erreur 404</h3>
+                <ul class="list-disc list-inside text-gray-400 space-y-2">
+                    <li>Vite n'est pas en cours d'exécution</li>
+                    <li>Le port est bloqué ou utilisé par une autre application</li>
+                    <li>Problème de configuration CORS</li>
+                    <li>Problème de chemin dans les assets</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="bg-gray-800 rounded-xl p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-4 text-blue-400">Test de connexion Vite</h3>
+            <div class="flex flex-col space-y-4">
+                <button onclick="testViteConnection()" class="btn bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg font-medium">
+                    Tester la connexion à Vite
+                </button>
+                <div id="testResult" class="p-4 rounded-lg bg-gray-700 hidden">
+                    <p class="font-medium" id="resultText"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-800 rounded-xl p-6">
+            <h3 class="text-lg font-semibold mb-4 text-purple-400">Configuration recommandée</h3>
+            <pre><code>// vite.config.js
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import vue from '@vitejs/plugin-vue';
+
+export default defineConfig({
+    server: {
+        host: 'localhost',
+        port: 5173,
+        cors: {
+            origin: ['http://localhost:8000'],
+            credentials: true,
+        },
+    },
+    plugins: [
+        laravel({
+            input: 'resources/js/app.js',
+            refresh: true,
+        }),
+        vue({
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
+            },
+        }),
+    ],
+    resolve: {
+        alias: {
+            '@': '/resources/js',
+        },
+    },
+});</code></pre>
+        </div>
+    </div>
+
+    <script>
+        function testViteConnection() {
+            const testResult = document.getElementById('testResult');
+            const resultText = document.getElementById('resultText');
+            
+            testResult.classList.remove('hidden');
+            resultText.innerHTML = 'Test en cours...';
+            testResult.classList.remove('bg-green-900', 'bg-red-900');
+            testResult.classList.add('bg-yellow-900');
+            
+            fetch('http://localhost:5173/@vite/client')
+                .then(response => {
+                    if (response.status === 200) {
+                        resultText.innerHTML = '✅ Connexion à Vite réussie! Le serveur fonctionne correctement.';
+                        testResult.classList.remove('bg-yellow-900');
+                        testResult.classList.add('bg-green-900');
+                    } else {
+                        resultText.innerHTML = '❌ Impossible de se connecter à Vite. Assurez-vous que le serveur fonctionne (npm run dev).';
+                        testResult.classList.remove('bg-yellow-900');
+                        testResult.classList.add('bg-red-900');
+                    }
+                })
+                .catch(error => {
+                    resultText.innerHTML = '❌ Erreur de connexion à Vite. Vérifiez que le serveur est démarré sur le port 5173.';
+                    testResult.classList.remove('bg-yellow-900');
+                    testResult.classList.add('bg-red-900');
+                    console.error('Erreur:', error);
+                });
+        }
+    </script>
+</body>
+</html>

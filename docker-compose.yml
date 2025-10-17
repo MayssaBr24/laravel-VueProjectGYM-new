@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mayssab/gym-management-app:1.0.0
+    container_name: gym_management_app
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mysql
+    networks:
+      - gym_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: gym_management_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - gym_network
+
+volumes:
+  mysql_data:
+
+networks:
+  gym_network:
+    driver: bridge
