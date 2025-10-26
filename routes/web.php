@@ -23,11 +23,15 @@ use App\Http\Controllers\ClientQrCodeController;
 use App\Http\Controllers\Admin\AdminQrController ;
 use App\Events\NewCoursePublished ;
 use App\Http\Controllers\Api\CalendarController;
-use App\Http\Controllers\Admin\CourseTypeController;
-use App\Http\Controllers\Admin\SubscriptionTypeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Client\QrScannerController;
 use App\Http\Controllers\Coach\IntrusController;
+use App\Http\Controllers\HistoriqueController;
+use App\Http\Controllers\Coach\CoachReservationNotificationController;
+use App\Http\Controllers\Client\HistoriqueClientController;
+use App\Http\Controllers\Admin\CourseManagementController as AdminCourseManagementController;
+use App\Http\Controllers\Client\ClientCalendarController;
+use App\Http\Controllers\Coach\CoachCalendarController;
 
 //page d'acceuil
 Route::get('/', function () {
@@ -79,10 +83,6 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
 
 });
 // type de cours pour l'admin
-Route::middleware(['auth', 'role:admin'])->prefix('course-types')->group(function () {
-    Route::get('/create', [CourseTypeController::class, 'create'])->name('course-types.create');
-    Route::post('/', [CourseTypeController::class, 'store'])->name('course-types.store');
-});
 
 
 //Routes pour les clients
@@ -109,6 +109,8 @@ Route::prefix('coach')->middleware(['auth', 'verified', 'role:coach'])->name('co
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('courses', CourseController::class)->except(['destroy']);
     Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+
+
 
     // Réservations globales
     Route::get('/reservations/stats', [ReservationController::class, 'stats'])->name('reservations.stats');
@@ -212,16 +214,8 @@ Route::middleware('auth:sanctum')->get('/calendar/courses', [CalendarController:
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/calendar', [CalendarController::class, 'index'])->name('Calendrier/index');
 });
-Route::middleware(['auth', 'role:admin'])->prefix('course-types')->name('admin.course-types.')->group(function () {
-    Route::get('/', [CourseTypeController::class, 'index'])->name('index');
-    Route::get('/create', [CourseTypeController::class, 'create'])->name('create');
-    Route::post('/', [CourseTypeController::class, 'store'])->name('store');
 
-});
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('subscription-types', [SubscriptionTypeController::class, 'index'])->name('subscription-types.index');
-    Route::post('subscription-types', [SubscriptionTypeController::class, 'store'])->name('subscription-types.store');
-});
+
 
 
 
@@ -278,8 +272,83 @@ Route::get('/courses/{id}/download-qr-pdf', [CourseController::class, 'downloadQ
     ->name('courses.downloadQrPdf');
 
 
+
 Route::prefix('coach')->group(function () {
     Route::get('/courses/{course}/attendances', [AttendanceController::class, 'show'])->name('coach.attendances.show');
     Route::post('/attendances/{attendance}/update-status', [AttendanceController::class, 'updateStatus'])->name('coach.attendances.update');
     Route::get('/courses/{course}/participants-json', [AttendanceController::class, 'participantsJson']);
 });
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('/notifications', [HistoriqueController::class, 'index']);
+    Route::post('/notifications/{id}/read', [HistoriqueController::class, 'markAsRead']);
+    Route::get('/notifications/all', [HistoriqueController::class, 'all']);
+});
+
+Route::prefix('client')->middleware(['auth'])->group(function () {
+    Route::get('/notifications', [HistoriqueClientController::class, 'index']);
+    Route::post('/notifications/{id}/read', [HistoriqueClientController::class, 'markAsRead']);
+    Route::get('/notifications/all', [HistoriqueClientController::class, 'all']);
+});
+
+
+
+Route::prefix('coach')->middleware(['auth'])->group(function () {
+    Route::get('/notifications', [CoachReservationNotificationController::class, 'index']);
+    Route::post('/notifications/{id}/read', [CoachReservationNotificationController::class, 'markAsRead']);
+    Route::get('/notifications/all', [CoachReservationNotificationController::class, 'all']);
+});
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Page principale
+    Route::get('/course-management', [AdminCourseManagementController::class, 'index'])
+        ->name('course-management.index');
+    
+    // Course Types
+    Route::post('/course-types', [AdminCourseManagementController::class, 'storeCourseType'])
+        ->name('course-types.store');
+    Route::delete('/course-types/{id}', [AdminCourseManagementController::class, 'destroyCourseType'])
+        ->name('course-types.destroy');
+    
+    // Subscription Types
+    Route::post('/subscription-types', [AdminCourseManagementController::class, 'storeSubscriptionType'])
+        ->name('subscription-types.store');
+    Route::delete('/subscription-types/{id}', [AdminCourseManagementController::class, 'destroySubscriptionType'])
+        ->name('subscription-types.destroy');
+});
+
+// Route pour le calendrier client
+Route::get('/client/calendar', [ClientCalendarController::class, 'index'])->name('client.calendar');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/client/courses/{course}/reserve', [ClientCalendarController::class, 'reserveCourse']);
+    Route::delete('/client/reservations/{reservation}', [ClientCalendarController::class, 'cancelReservation']);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/coach/calendar', [CoachCalendarController::class, 'index'])->name('coach.calendar');
+    Route::post('/coach/courses', [CoachCalendarController::class, 'store'])->name('coach.courses.store');
+    Route::put('/coach/courses/{course}', [CoachCalendarController::class, 'update'])->name('coach.courses.update');
+    Route::delete('/coach/courses/{course}', [CoachCalendarController::class, 'destroy'])->name('coach.courses.destroy');
+});
+
+
+
+
+
+// Routes pour le coach
+Route::middleware(['auth', 'role:coach'])->prefix('coach')->name('coach.')->group(function () {
+    // Routes pour les cours du coach
+    Route::get('/courses/create', [CoachCourseController::class, 'create'])->name('courses.create');
+    Route::post('/courses', [CoachCourseController::class, 'store'])->name('courses.store');
+    
+    // Ajoutez d'autres routes pour le coach si nécessaire
+    Route::get('/courses', [CoachCourseController::class, 'index'])->name('courses.index');
+    // ... autres routes
+});
+
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/admin/reservations/export-pdf', [AdminReservationController::class, 'exportPdf'])->name('admin.reservations.export.pdf');
+});
+
+Route::get('/admin/payments/export', [PaymentController::class, 'export'])->name('payments.export');

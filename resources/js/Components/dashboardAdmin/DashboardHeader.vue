@@ -1,10 +1,8 @@
-
 <template>
   <header class="bg-gray-900/95 backdrop-blur-xl border-b border-gray-700/50 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo & Brand -->
-        
         <div class="flex items-center gap-4">
           <div class="w-10 h-10 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,13 +14,9 @@
           <div class="hidden md:block ml-2">
             <div class="text-2xl font-extrabold tracking-tight">
               <span class="text-gray-300">Bienvenue, </span>
-              <span 
-                v-if="user && user.name"
-                class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400"
-              >
-                {{ user.name }}
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+                {{ user.name }} 
               </span>
-
               <span class="text-emerald-400 animate-bounce inline-block">!</span>
             </div>
           </div>
@@ -30,6 +24,8 @@
 
         <!-- Right Section -->
         <div class="flex items-center gap-4">
+                <AdminNotifications />
+
           <!-- Profile Dropdown -->
           <div class="relative">
             <button 
@@ -42,13 +38,13 @@
                   class="h-10 w-10 rounded-full object-cover border-2 border-gray-600 group-hover:border-emerald-400 transition-all duration-200"
                   alt="Photo de profil"
                 />
-
                 <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-gray-900"></div>
               </div>
               <div class="hidden sm:block text-left">
                 <p class="text-white font-bold text-sm">{{ user.name }}</p>
-                <p class="text-gray-400 text-xs">Admin</p>
+                <p class="text-gray-400 text-xs">Coach Expert</p>
               </div>
+              
               <svg 
                 class="w-4 h-4 text-gray-400 group-hover:text-white transition-all duration-200"
                 :class="{ 'rotate-180': isProfileMenuOpen }"
@@ -77,7 +73,7 @@
                 <!-- Profile Header -->
                 <div class="px-6 py-4 bg-gradient-to-r from-gray-800/50 to-gray-700/50 border-b border-gray-700/50">
                   <div class="flex items-center gap-4">
-                    <img
+                   <img
                     v-if="user"
                     :src="user.avatar_url || '/default-avatar.png'"
                     alt="Avatar"
@@ -89,8 +85,6 @@
                     alt="Avatar par défaut"
                     class="rounded-full w-24 h-24 object-cover"
                   />
-
-                    
                     <div class="flex-1">
                       <p class="text-white font-semibold">{{ user.name }}</p>
                       <p class="text-gray-400 text-sm">{{ user.email }}</p>
@@ -139,8 +133,6 @@
               </div>
             </transition>
           </div>
-          
-          
 
           <!-- Mobile Menu Button -->
           <button 
@@ -151,7 +143,6 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h14M4 18h16" />
             </svg>
           </button>
-
         </div>
       </div>
     </div>
@@ -162,20 +153,17 @@
 import { Link, usePage } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
-import { watchEffect } from 'vue'
+import AdminNotifications from '@/Components/dashboardAdmin/AdminNotifications.vue'
+
 const page = usePage()
 const isProfileMenuOpen = ref(false)
 const isMobileMenuOpen = ref(false)
 
-const user = computed(() => page.props.auth?.user ?? null)
-watchEffect(() => {
-console.log('Avatar URL:', user.value?.avatar_url)
-})
+const user = computed(() => page.props.auth.user)
 
 const isCurrentRoute = (routeName) => {
   return route().current(routeName)
 }
-
 
 const toggleProfileMenu = () => {
   isProfileMenuOpen.value = !isProfileMenuOpen.value
@@ -190,7 +178,6 @@ const toggleMobileMenu = () => {
 const logout = () => {
   router.post(route('logout'))
 }
-
 </script>
 
 <style>

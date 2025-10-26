@@ -53,24 +53,51 @@
               <h2 class="text-xl font-bold text-white">Informations de base</h2>
             </div>
 
-            <!-- Nom du cours -->
-            <div class="space-y-2">
-              <label class="block text-sm font-semibold text-gray-300">
-                Nom du cours <span class="text-red-400">*</span>
-              </label>
-              <input 
-                v-model="form.name" 
-                type="text" 
-                class="w-full px-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 backdrop-blur-sm"
-                placeholder="Ex: Yoga Matinal, CrossFit Intense, Pilates Débutant..."
-              />
-              <div v-if="form.errors.name" class="flex items-center space-x-2 text-red-400 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{{ form.errors.name }}</span>
+           <div class="space-y-6">
+          
+
+           <!-- Cour Select - Improved Design -->
+                <label class="block text-sm font-semibold text-gray-300/90">
+                  Nom du cour <span class="text-red-400">*</span>
+                </label>
+                
+                <div class="relative group">
+                  <select
+                    v-model="form.course_type_id"
+                    class="w-full pl-12 pr-10 py-3.5 bg-gray-800/70 border-2 border-gray-700 rounded-xl text-white/90 placeholder-gray-400/80 
+                          focus:ring-2 focus:ring-emerald-400/90 focus:border-emerald-500 focus:bg-gray-800/80
+                          transition-all duration-200 ease-out backdrop-blur-sm appearance-none
+                          group-hover:border-gray-600 group-hover:bg-gray-800/80
+                          shadow-lg shadow-gray-900/10"
+                  >
+                    <option value="" disabled selected class="text-gray-400 bg-gray-800">Sélectionnez un cour</option>
+                    <option 
+                          v-for="type in types" 
+                          :key="type.id" 
+                          :value="type.id"
+    
+                      class="bg-gray-800 text-white hover:bg-emerald-500 hover:text-white"
+                    >
+                      {{ type.name }}
+                    </option>
+                  </select>
+                  
+                  <!-- User Icon Only - Removed duplicate arrow -->
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none
+                              transition-transform duration-200 group-focus-within:translate-x-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400/90 group-hover:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  
+                  <!-- Single Dropdown Arrow (positioned right) -->
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400/90 group-hover:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
               </div>
-            </div>
 
             <!-- Description -->
             <div class="space-y-2">
@@ -106,28 +133,62 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Coach -->
               <div class="space-y-2">
-                <label class="block text-sm font-semibold text-gray-300">
+               <label class="block text-sm font-semibold text-gray-300/90">
                   Nom du coach <span class="text-red-400">*</span>
                 </label>
-                <div class="relative">
-                  <input 
-                    v-model="form.coach_name" 
-                    type="text" 
-                    class="w-full pl-12 pr-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 backdrop-blur-sm"
-                    placeholder="Nom du coach responsable"
-                  />
-                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                
+                <div class="relative group">
+                  <select
+                    v-model="form.coach_name"
+                    class="w-full pl-12 pr-10 py-3.5 bg-gray-800/70 border-2 border-gray-700 rounded-xl text-white/90 placeholder-gray-400/80 
+                          focus:ring-2 focus:ring-emerald-400/90 focus:border-emerald-500 focus:bg-gray-800/80
+                          transition-all duration-200 ease-out backdrop-blur-sm appearance-none
+                          group-hover:border-gray-600 group-hover:bg-gray-800/80
+                          shadow-lg shadow-gray-900/10"
+                  >
+                    <option value="" disabled selected class="text-gray-400 bg-gray-800">Sélectionnez un coach</option>
+                    <option 
+                      v-for="user in coaches" 
+                      :key="user.id" 
+                      :value="user.name"
+                      class="bg-gray-800 text-white hover:bg-emerald-500 hover:text-white"
+                    >
+                      {{ user.name }}
+                    </option>
+                  </select>
+                  
+                  <!-- User Icon Only - Removed duplicate arrow -->
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none
+                              transition-transform duration-200 group-focus-within:translate-x-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400/90 group-hover:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
+                  
+                  <!-- Single Dropdown Arrow (positioned right) -->
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400/90 group-hover:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
                 </div>
-                <div v-if="form.errors.coach_name" class="flex items-center space-x-2 text-red-400 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{{ form.errors.coach_name }}</span>
-                </div>
+                
+                <!-- Error Message -->
+                <transition
+                  enter-active-class="transition duration-150 ease-out"
+                  enter-from-class="opacity-0 -translate-y-1"
+                  enter-to-class="opacity-100 translate-y-0"
+                  leave-active-class="transition duration-100 ease-in"
+                  leave-from-class="opacity-100 translate-y-0"
+                  leave-to-class="opacity-0 -translate-y-1"
+                >
+                  <div v-if="form.errors.coach_name" class="flex items-center space-x-2 text-red-400/90 text-sm mt-1 ml-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="leading-tight">{{ form.errors.coach_name }}</span>
+                  </div>
+                </transition>
               </div>
 
               <!-- Participants max -->
@@ -259,31 +320,59 @@
 </template>
 
 <script setup>
-import { useForm, Link } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { useForm, Head, Link } from '@inertiajs/vue3';
+import { ref, watch, onMounted } from 'vue'; // Ajout de watch ici
+import axios from 'axios';
 
-const props = defineProps({ 
-  course: {
+const coaches = ref([]);
+
+const props = defineProps({
+  types: {
+    type: Array,
+    required: true,
+    default: () => []
+  },
+  course: { // ✅ On récupère le cours depuis le backend
     type: Object,
-    required: true
+    required: false,
+    default: () => ({})
   }
-});
+})
+
 
 const form = useForm({
-  name: props.course.name,
-  description: props.course.description,
-  coach_name: props.course.coach_name,
-  max_participants: props.course.max_participants,
-  start_time: props.course.start_time,
-  end_time: props.course.end_time,
+  course_type_id: props.course.course_type_id ?? '',
+  description: props.course.description ?? '',
+  coach_name: props.course.coach_name ?? '',
+  max_participants: props.course.max_participants ?? '',
+  start_time: props.course.start_time ?? '',
+  end_time: props.course.end_time ?? '',
+  name: props.course.name ?? ''
+})
+
+// Watcher pour synchroniser le nom avec le type de cours
+watch(() => form.course_type_id, (newTypeId) => {
+  const selectedType = props.types.find(type => type.id == newTypeId);
+  form.name = selectedType ? selectedType.name : '';
+}, { immediate: true });
+
+onMounted(() => {
+  axios.get('/admin/coaches')
+    .then(response => {
+      coaches.value = response.data;
+    })
+    .catch(error => {
+      console.error('Erreur lors de la récupération des coaches:', error);
+    });
 });
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'Date non disponible';
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString('fr-FR', options);
-};
-
+const formatDate = (date) => {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
 </script>
 
 <style scoped>

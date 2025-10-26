@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-900">
-    <!-- Header -->
+    <!-- Header moderne avec gradient -->
     <header class="relative overflow-hidden bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700/50">
       <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-blue-500/10"></div>
       <div class="relative flex flex-col space-y-6 md:flex-row md:justify-between md:items-center px-6 py-8">
@@ -32,9 +32,9 @@
     </header>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Formulaire -->
+      <!-- Formulaire moderne -->
       <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 overflow-hidden shadow-2xl backdrop-blur-sm">
-        <form @submit.prevent="submitForm" class="p-8 space-y-8">
+        <form @submit.prevent="form.post(route('coach.courses.store'))" class="p-8 space-y-8">
           <!-- Section Informations de base -->
           <div class="space-y-6">
             <div class="flex items-center space-x-3 mb-6">
@@ -45,51 +45,52 @@
               </div>
               <h2 class="text-xl font-bold text-white">Informations de base</h2>
             </div>
+          </div>
 
-            <!-- Nom du cours -->
+          <!-- Section type de cour -->
+          <div class="space-y-6">
             <!-- Cour Select - Improved Design -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-300/90">
+                Nom du cour <span class="text-red-400">*</span>
+              </label>
               
-                <label class="block text-sm font-semibold text-gray-300/90">
-                  Nom du cour <span class="text-red-400">*</span>
-                </label>
-                
-                <div class="relative group">
-                  <select
-                    v-model="form.course_type_id"
-                    class="w-full pl-12 pr-10 py-3.5 bg-gray-800/70 border-2 border-gray-700 rounded-xl text-white/90 placeholder-gray-400/80 
-                          focus:ring-2 focus:ring-emerald-400/90 focus:border-emerald-500 focus:bg-gray-800/80
-                          transition-all duration-200 ease-out backdrop-blur-sm appearance-none
-                          group-hover:border-gray-600 group-hover:bg-gray-800/80
-                          shadow-lg shadow-gray-900/10"
+              <div class="relative group">
+                <select
+                  v-model="form.course_type_id"
+                  class="w-full pl-12 pr-10 py-3.5 bg-gray-800/70 border-2 border-gray-700 rounded-xl text-white/90 placeholder-gray-400/80 
+                        focus:ring-2 focus:ring-emerald-400/90 focus:border-emerald-500 focus:bg-gray-800/80
+                        transition-all duration-200 ease-out backdrop-blur-sm appearance-none
+                        group-hover:border-gray-600 group-hover:bg-gray-800/80
+                        shadow-lg shadow-gray-900/10"
+                >
+                  <option value="" disabled selected class="text-gray-400 bg-gray-800">Sélectionnez un cour</option>
+                  <option 
+                    v-for="type in types" 
+                    :key="type.id" 
+                    :value="type.id"
+                    class="bg-gray-800 text-white hover:bg-emerald-500 hover:text-white"
                   >
-                    <option value="" disabled selected class="text-gray-400 bg-gray-800">Sélectionnez un cour</option>
-                    <option 
-                          v-for="type in types" 
-                          :key="type.id" 
-                          :value="type.id"
-    
-                      class="bg-gray-800 text-white hover:bg-emerald-500 hover:text-white"
-                    >
-                      {{ type.name }}
-                    </option>
-                  </select>
-                  
-                  <!-- User Icon Only - Removed duplicate arrow -->
-                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none
-                              transition-transform duration-200 group-focus-within:translate-x-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400/90 group-hover:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                  
-                  <!-- Single Dropdown Arrow (positioned right) -->
-                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400/90 group-hover:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
+                    {{ type.name }}
+                  </option>
+                </select>
+                
+                <!-- User Icon Only - Removed duplicate arrow -->
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none
+                            transition-transform duration-200 group-focus-within:translate-x-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400/90 group-hover:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
                 </div>
-              
+                
+                <!-- Single Dropdown Arrow (positioned right) -->
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400/90 group-hover:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
 
             <!-- Description -->
             <div class="space-y-2">
@@ -99,10 +100,9 @@
               <textarea 
                 v-model="form.description" 
                 rows="4" 
-                required
                 class="w-full px-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 backdrop-blur-sm resize-none"
                 placeholder="Décrivez votre cours : objectifs, niveau requis, équipements nécessaires..."
-              ></textarea>
+              />
               <div v-if="form.errors.description" class="flex items-center space-x-2 text-red-400 text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -112,12 +112,36 @@
             </div>
           </div>
 
+          <!-- Section Coach et Participants -->
           <div class="space-y-6">
-            
+            <div class="flex items-center space-x-3 mb-6">
+              <div class="p-2 bg-blue-500/20 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h2 class="text-xl font-bold text-white">Coach et Participants</h2>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Sélection du coach -->
-             
+              <!-- Coach (affichage seulement) -->
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-300/90">
+                  Coach
+                </label>
+                <div class="relative">
+                  <div class="w-full pl-12 pr-6 py-3.5 bg-gray-800/50 border-2 border-gray-700 rounded-xl text-white/90 backdrop-blur-sm">
+                    {{ $page.props.auth.user.name }}
+                  </div>
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-sm text-gray-400 mt-1">Vous êtes automatiquement assigné comme coach de ce cours</p>
+              </div>
+
               <!-- Participants max -->
               <div class="space-y-2">
                 <label class="block text-sm font-semibold text-gray-300">
@@ -129,7 +153,6 @@
                     type="number" 
                     min="1"
                     max="50"
-                    required
                     class="w-full pl-12 pr-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 backdrop-blur-sm"
                     placeholder="Ex: 15"
                   />
@@ -170,7 +193,6 @@
                   <input 
                     v-model="form.start_time" 
                     type="datetime-local" 
-                    required
                     class="w-full pl-12 pr-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 backdrop-blur-sm"
                   />
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -196,7 +218,6 @@
                   <input 
                     v-model="form.end_time" 
                     type="datetime-local" 
-                    required
                     class="w-full pl-12 pr-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 backdrop-blur-sm"
                   />
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -234,7 +255,7 @@
             </button>
             
             <Link 
-              :href="route('courses.index')" 
+              :href="route('coach.courses.index')" 
               class="flex-1 px-8 py-4 bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 text-center flex items-center justify-center space-x-3 backdrop-blur-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -248,59 +269,43 @@
     </div>
   </div>
 </template>
-<script setup>
-import { useForm, Link, usePage } from '@inertiajs/vue3'
-import { ref, onMounted, watch } from 'vue'  // Added watch import here
-import axios from 'axios'
 
-// Define props
+<script setup>
+import { useForm, Head, Link } from '@inertiajs/vue3';
+import { ref, watch, onMounted } from 'vue';
+
 const props = defineProps({
   types: {
     type: Array,
-    required: true
+    required: true,
+    default: () => []
   }
-})
-
-const coaches = ref([])
+});
 
 const form = useForm({
-  name: '',
-  description: '',
   course_type_id: '',
-  max_participants: 10,
+  description: '',
+  max_participants: '',
   start_time: '',
   end_time: '',
-})
+  name: ''
+});
 
 // Watcher pour synchroniser le nom avec le type de cours
 watch(() => form.course_type_id, (newTypeId) => {
   const selectedType = props.types.find(type => type.id == newTypeId);
   form.name = selectedType ? selectedType.name : '';
 }, { immediate: true });
-
-const submitForm = () => {
-  form.post(route('coach.courses.store'), {
-    preserveScroll: true,
-    onSuccess: () => {
-      form.reset()
-    },
-    onError: (errors) => {
-      console.log('Erreurs de validation:', errors)
-    }
-  })
-}
 </script>
 
-
-
 <style scoped>
+/* Votre CSS existant reste inchangé */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Scrollbar personnalisée pour le thème sombre */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -320,13 +325,11 @@ body {
   background: rgba(16, 185, 129, 0.7);
 }
 
-/* Effet de focus moderne */
 input:focus, textarea:focus, select:focus {
   transform: translateY(-1px);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1), 0 4px 12px -2px rgba(16, 185, 129, 0.25);
 }
 
-/* Animation de pulsation */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -340,18 +343,15 @@ input:focus, textarea:focus, select:focus {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Effet de backdrop blur */
 .backdrop-blur-sm {
   backdrop-filter: blur(4px);
 }
 
-/* Gradient text */
 .bg-clip-text {
   -webkit-background-clip: text;
   background-clip: text;
 }
 
-/* Animation de rotation */
 .animate-spin {
   animation: spin 1s linear infinite;
 }

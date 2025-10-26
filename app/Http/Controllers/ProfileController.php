@@ -32,32 +32,26 @@ class ProfileController extends Controller
         ]);
     }
 
-   public function update(Request $request)
+  public function update(Request $request)
 {
     $user = $request->user();
     
-    if (!$user) {
-        return back()->withErrors(['user' => 'Utilisateur non trouvé']);
-    }
-
     $validated = $request->validate([
-        'name' => 'sometimes|required|string|max:255', // ← Ajout de 'sometimes'
-        'email' => 'sometimes|required|email|unique:users,email,'.$user->id, // ← Ajout de 'sometimes'
+        'name' => 'nullable|string|max:255', // nullable au lieu de sometimes|required
+        'email' => 'nullable|email|unique:users,email,'.$user->id,
         'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'password' => 'nullable|min:8|confirmed',
     ]);
 
-    // Mettre à jour seulement les champs présents dans la requête
     $updateData = [];
     
-    if ($request->has('name')) {
+    if (!empty($validated['name'])) {
         $updateData['name'] = $validated['name'];
     }
     
-    if ($request->has('email')) {
+    if (!empty($validated['email'])) {
         $updateData['email'] = $validated['email'];
     }
-
     // Mettre à jour l'avatar si un nouveau fichier est fourni
     if ($request->hasFile('avatar')) {
         // Supprimer l'ancien avatar s'il existe

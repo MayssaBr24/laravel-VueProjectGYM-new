@@ -13,10 +13,7 @@ class CourseDetailController extends Controller
 {
     public function show(Course $course)
     {
-        // Vérifier que le cours appartient au coach connecté
-        if ($course->coach_id !== auth()->id()) {
-            abort(403, 'Accès non autorisé');
-        }
+       
 
         // Charger les réservations avec les utilisateurs
         $course->load(['reservations.user']);

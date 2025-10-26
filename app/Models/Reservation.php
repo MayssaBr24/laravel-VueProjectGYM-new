@@ -19,6 +19,7 @@ class Reservation extends Model
         'coach_id',
         'room_id',
         'payment_id',
+        'is_read',
         
 
     ];

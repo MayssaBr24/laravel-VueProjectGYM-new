@@ -24,6 +24,8 @@
 
         <!-- Right Section -->
         <div class="flex items-center gap-4">
+        <CoachNotifications />
+
           <!-- Profile Dropdown -->
           <div class="relative">
             <button 
@@ -150,6 +152,7 @@
 import { Link, usePage } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
+import CoachNotifications from '@/Components/Coach/CoachNotifications.vue'
 
 const page = usePage()
 const isProfileMenuOpen = ref(false)

@@ -14,6 +14,8 @@ use Inertia\Inertia;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Encoding\Encoding;
+use App\Models\Historique;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -36,97 +38,137 @@ class CourseController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required',
-            'coach_name' => 'required|string',
-            'max_participants' => 'required|integer|min:1',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-            'course_type_id' => 'required|exists:course_types,id'
-        ]);
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'required',
+        'coach_name' => 'required|string',
+        'max_participants' => 'required|integer|min:1',
+        'start_time' => 'required|date',
+        'end_time' => 'required|date|after:start_time',
+        'course_type_id' => 'required|exists:course_types,id'
+    ]);
 
-        $courseType = CourseType::findOrFail($request->course_type_id);
+    $courseType = CourseType::findOrFail($validated['course_type_id']);
 
-        $course = Course::create([
-            'name' => $validated['name'],
-            'description' => $validated['description'],
-            'coach_id' => auth()->id(),
-            'coach_name' => $validated['coach_name'],
-            'type' => $courseType->name,
-            'price' => $courseType->price,
-            'max_participants' => $validated['max_participants'],
-            'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
-            'course_type_id' => $validated['course_type_id'],
-        ]);
+    // Utiliser forceFill pour forcer l'insertion de tous les champs
+    $course = new Course();
+    $course->forceFill([
+        'name' => $validated['name'],
+        'description' => $validated['description'],
+        'coach_id' => Auth::id(),
+        'coach_name' => $validated['coach_name'],
+        'type' => $courseType->name,
+        'price' => $courseType->price,
+        'max_participants' => $validated['max_participants'],
+        'start_time' => $validated['start_time'],
+        'end_time' => $validated['end_time'],
+        'course_type_id' => $validated['course_type_id'],
+    ])->save();
 
-        // 🔹 Génération du QR code
-        $this->generateQrCode($course);
+    Historique::create([
+        'action' => 'add',
+        'user_role' => Auth::user()->role,
+        'user_id' => Auth::id(),
+        'course_id' => $course->id,
+        'description' => "Cours '{$course->name}' ajouté par " . Auth::user()->name,
+        'action_at' => now(),
+        'is_read' => false,
+    ]);
 
-        // Notifications aux clients
-        $users = User::where('role', 'client')
-            ->where('notification_preference', true)
-            ->get();
+    // Génération du QR code
+    $this->generateQrCode($course);
 
-        foreach ($users as $user) {
-            $user->notify(new NewCourseNotification($course));
-        }
+    // Notifications aux clients
+    $users = User::where('role', 'client')
+        ->where('notification_preference', true)
+        ->get();
 
-        broadcast(new NewCoursePublished($course))->toOthers();
-
-        return redirect()->route('courses.index')->with('success', 'Cours ajouté et QR code généré !');
+    foreach ($users as $user) {
+        $user->notify(new NewCourseNotification($course));
     }
+
+    broadcast(new NewCoursePublished($course))->toOthers();
+
+    return redirect()->route('courses.index')->with('success', 'Cours ajouté et QR code généré !');
+}
 
     public function edit(Course $course)
-    {
-        return Inertia::render('Courses/Edit', ['course' => $course]);
+{
+    return Inertia::render('Courses/Edit', [
+        'types' => CourseType::all(),
+        'coaches' => User::where('role', 'coach')->get(),
+        'course' => $course, //  On ajoute le cours ici
+    ]);
+}
+
+
+ public function update(Request $request, Course $course)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'required',
+        'coach_name' => 'required|string',
+        'max_participants' => 'required|integer|min:1',
+        'start_time' => 'required|date',
+        'end_time' => 'required|date|after:start_time',
+        'course_type_id' => 'required|exists:course_types,id'
+    ]);
+
+    $courseType = CourseType::findOrFail($validated['course_type_id']);
+
+$oldName = $course->getOriginal('name');
+    $course->update([
+        'name' => $validated['name'],
+        'description' => $validated['description'],
+        'coach_name' => $validated['coach_name'],
+        'max_participants' => $validated['max_participants'],
+        'start_time' => $validated['start_time'],
+        'end_time' => $validated['end_time'],
+        'course_type_id' => $validated['course_type_id'],
+        'type' => $courseType->name,
+        'price' => $courseType->price,
+    ]);
+
+    Historique::create([
+        'action' => 'update',
+        'user_role' => Auth::user()->role,
+        'user_id' => Auth::id(),
+        'course_id' => $course->id,
+        'description' => "Mise à jour du cours '{$oldName}'  " . Auth::user()->name,
+        'action_at' => now(),
+        'is_read' => false,
+    ]);
+
+    $this->generateQrCode($course);
+
+    return redirect()->route('courses.index')->with('success', 'Cours mis à jour !');
+}
+
+   public function destroy(Course $course)
+{
+    $courseName = $course->name;
+    $courseId = $course->id;
+
+    if ($course->qr_code && Storage::disk('public')->exists($course->qr_code)) {
+        Storage::disk('public')->delete($course->qr_code);
     }
 
-    public function update(Request $request, Course $course)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required',
-            'coach_name' => 'required|string',
-            'max_participants' => 'required|integer|min:1',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-            'course_type_id' => 'required|exists:course_types,id'
-        ]);
+    Historique::create([
+        'action' => 'delete',
+        'user_role' => Auth::user()->role,
+        'user_id' => Auth::id(),
+        'course_id' => $courseId,
+        'description' => "Suppression du cours '{$courseName}'",
+        'action_at' => now(),
+        'is_read' => false,
+    ]);
 
-        $courseType = CourseType::findOrFail($request->course_type_id);
+    $course->delete();
 
-        $course->update([
-            'name' => $validated['name'],
-            'description' => $validated['description'],
-            'coach_name' => $validated['coach_name'],
-            'max_participants' => $validated['max_participants'],
-            'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
-            'type' => $courseType->name,
-            'price' => $courseType->price,
-            'course_type_id' => $validated['course_type_id'],
-        ]);
-
-        // 🔹 Régénération du QR code
-        $this->generateQrCode($course);
-
-        return redirect()->route('courses.index')->with('success', 'Cours mis à jour !');
-    }
-
-    public function destroy(Course $course)
-    {
-        // Supprimer QR code si existe
-        if ($course->qr_code && Storage::disk('public')->exists($course->qr_code)) {
-            Storage::disk('public')->delete($course->qr_code);
-        }
-
-        $course->delete();
-        return redirect()->route('courses.index')->with('success', 'Cours supprimé.');
-    }
+    return redirect()->route('courses.index')->with('success', 'Cours supprimé avec historique enregistré ✅');
+}
 
    public function userIndex()
 {

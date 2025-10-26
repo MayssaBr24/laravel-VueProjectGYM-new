@@ -8,6 +8,7 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Historique;
 
 class ReservationController extends Controller
 {
@@ -49,7 +50,21 @@ class ReservationController extends Controller
             'course_id' => $course->id,
             'reservation_date' => now(),
             'status' => 'confirmed',
+            'is_read' => false,
         ]);
+
+       
+        Historique::create([
+    'action' => 'reservation',
+    'user_role' => Auth::user()->role, // ex: 'user'
+    'for_role' => 'coach', // c’est pour le coach
+    'user_id' => Auth::id(),
+    'course_id' => $course->id,
+
+    'description' => "Réservation du cours '{$course->name}' par " . Auth::user()->name,
+    'action_at' => now(),
+]);
+        
 
         // 4️⃣ Crée ou met à jour la présence
         Attendance::updateOrCreate(
@@ -63,28 +78,32 @@ class ReservationController extends Controller
             ]
         );
 
-        // 5️⃣ Crée le paiement associé
-        Payment::create([
-            'user_id' => $userId,
-            'course_id' => $course->id,
-            'amount' => $course->price_per_session ?? 20,
-            'status' => 'pending',
-            'attendance_verified' => false,
-        ]);
-
+        
         return back()->with('success', 'Réservation réussie ✅');
     }
 
     public function destroy($id)
-    {
-        $reservation = Reservation::findOrFail($id);
+{
+    $reservation = Reservation::findOrFail($id);
+    $course_id = $reservation->course_id; // récupère l'ID du cours
 
-        if ($reservation->user_id !== Auth::id()) {
-            abort(403, "Vous n'êtes pas autorisé à annuler cette réservation.");
-        }
+    $reservation->delete();
 
-        $reservation->delete();
+    // Enregistrement historique
+    Historique::create([
+        'action' => 'delete_reservation',
+        'user_role' => Auth::user()->role,
+        'user_id' => Auth::id(),
+        'course_id' => $course_id, // <-- ici
+        'description' => "Annulation de la réservation du cours '{$reservation->course->name}'",
+        'action_at' => now(),
+    ]);
 
-        return back()->with('success', 'Réservation annulée avec succès.');
-    }
+    return back()->with('success', 'Réservation annulée avec succès.');
+}
+
+
+
+
+   
 }

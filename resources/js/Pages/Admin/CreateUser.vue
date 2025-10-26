@@ -111,7 +111,6 @@ const submit = () => {
           >
             <option value="client">Client</option>
             <option value="coach">Coach</option>
-            <option value="admin">Administrateur</option>
           </select>
         </div>
 

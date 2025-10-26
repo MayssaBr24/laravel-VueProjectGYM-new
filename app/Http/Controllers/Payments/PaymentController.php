@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Payments;
 
 use App\Http\Controllers\Controller;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Inertia\Inertia;
 use App\Models\Payment;
 use App\Models\SubscriptionType;
@@ -11,6 +10,7 @@ use App\Models\CourseType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PaymentController extends Controller
 {
@@ -63,35 +63,35 @@ class PaymentController extends Controller
 
     public function export()
     {
-        $headers = [
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=payments.csv",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+        $payments = Payment::with(['user', 'courseType', 'subscriptionType'])
+            ->latest()
+            ->get();
+
+        // Statistiques
+        $totalRevenue = $payments->where('status', 'succeeded')->sum('amount');
+        $successCount = $payments->where('status', 'succeeded')->count();
+        $pendingCount = $payments->where('status', 'pending')->count();
+        $failedCount = $payments->where('status', 'failed')->count();
+
+        $data = [
+            'payments' => $payments,
+            'totalRevenue' => $totalRevenue,
+            'successCount' => $successCount,
+            'pendingCount' => $pendingCount,
+            'failedCount' => $failedCount,
+            'exportDate' => now()->format('d/m/Y à H:i'),
+            'totalCount' => $payments->count(),
         ];
 
-        $payments = Payment::with('user')->latest()->get();
+        $pdf = PDF::loadView('exports.payments-pdf', $data)
+                  ->setPaper('a4', 'landscape')
+                  ->setOptions([
+                      'defaultFont' => 'sans-serif',
+                      'isHtml5ParserEnabled' => true,
+                      'isRemoteEnabled' => true,
+                  ]);
 
-        $callback = function () use ($payments) {
-            $file = fopen('php://output', 'w');
-            // Entêtes
-            fputcsv($file, ['ID', 'Nom', 'Montant', 'Date', 'Statut']);
-
-            foreach ($payments as $p) {
-                fputcsv($file, [
-                    $p->id,
-                    $p->user->name ?? 'Inconnu',
-                    $p->amount,
-                    $p->paid_at ? $p->paid_at->format('Y-m-d') : '',
-                    $p->status,
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return new StreamedResponse($callback, 200, $headers);
+        return $pdf->download('paiements_' . now()->format('Y-m-d_H-i') . '.pdf');
     }
 
     public function store(Request $request)
@@ -133,5 +133,33 @@ class PaymentController extends Controller
                 'message' => $e->getMessage()
             ], 422);
         }
+    }
+
+    /**
+     * Traduit le statut en français
+     */
+    private function translateStatus($status)
+    {
+        $statuses = [
+            'succeeded' => 'Réussi',
+            'pending' => 'En attente',
+            'failed' => 'Échoué',
+            'refunded' => 'Remboursé'
+        ];
+
+        return $statuses[$status] ?? $status;
+    }
+
+    /**
+     * Traduit le type de paiement en français
+     */
+    private function translatePaymentType($type)
+    {
+        $types = [
+            'course' => 'Cours',
+            'subscription' => 'Abonnement'
+        ];
+
+        return $types[$type] ?? $type;
     }
 }

@@ -5,9 +5,9 @@
 
     <div class="min-h-screen bg-gray-900 pb-12">
       <!-- Statistiques -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatsCard
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <StatsCard
             title="Membres Actifs"
             :value="membersData.length"
             subtitle="+12% ce mois"
@@ -23,13 +23,13 @@
             :icon-component="CalendarIcon"
           />
           <StatsCard
-            title="Revenus (30j)"
-            :value="totalRevenue + ' TND'"
-            subtitle="+8% vs mois dernier"
-            color="purple"
-            :icon-component="CurrencyIcon"
-            :show-trend="true"
-          />
+  title="Revenus (30j)"
+  :value="Math.round(totalRevenue) + ' TND'"
+  color="purple"
+  :icon-component="CurrencyIcon"
+  :show-trend="true"
+/>
+
 
           <StatsCard
             title="Réservations"
@@ -45,7 +45,7 @@
       </div>
 
       <!-- Contenu principal -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div class="flex flex-col lg:flex-row gap-8">
 
           <!-- Colonne principale (table + calendrier) -->
@@ -89,10 +89,7 @@
               :weekly-courses="weeklyCourses"
               :latest-reservations="latestReservations"
             />
-            <PendingAttendances
-              :pendingAttendances="pendingAttendances"
-              @update-attendance="fetchPendingAttendances"
-            />
+            
           </div>
       </div>
     </div>
@@ -122,7 +119,6 @@ import CoursesTab from '@/Components/dashboardAdmin/CoursesTab.vue';
 import PaymentsTab from '@/Components/dashboardAdmin/PaymentsTab.vue';
 import DashboardSidebar from '@/Components/dashboardAdmin/DashboardSidebar.vue';
 import DeleteConfirmationModal from '@/Components/dashboardAdmin/DeleteConfirmationModal.vue';
-import PendingAttendances from '@/Components/dashboardAdmin/PendingAttendances.vue';
 
 import { UsersIcon, CalendarIcon, CurrencyDollarIcon as CurrencyIcon, TicketIcon } from '@heroicons/vue/24/outline';
 

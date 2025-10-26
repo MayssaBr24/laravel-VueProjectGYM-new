@@ -200,9 +200,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { usePage, useForm, Link } from '@inertiajs/vue3'
-
+import { ref, computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
   user: Object,
@@ -212,11 +211,10 @@ const props = defineProps({
 
 const flash = computed(() => usePage().props.flash || {})
 
-const form = useForm({
-  name: props.user?.name ?? '',
-  email: props.user?.email ?? '',
-  avatar: props.user?.avatar ?? '',
-
+const form = ref({
+  name: '',
+  email: '',
+  avatar: null,
   password: '',
   password_confirmation: ''
 })
@@ -228,19 +226,23 @@ function onavatarSelected(event) {
   const file = event.target.files[0]
   if (!file) return
   
-  
-  
   if (file.size > 2048 * 1024) {
-    form.errors.avatar = 'L\'image ne doit pas dépasser 2MB'
+    form.value.errors = { avatar: 'L\'image ne doit pas dépasser 2MB' }
     return
   }
   
-  form.avatar = file
+  form.value.avatar = file
   avatarPreview.value = URL.createObjectURL(file)
 }
 
 function resetForm() {
-  form.reset()
+  form.value = {
+    name: '',
+    email: '',
+    avatar: null,
+    password: '',
+    password_confirmation: ''
+  }
   avatarPreview.value = null
 }
 
@@ -248,28 +250,28 @@ async function submit() {
   processing.value = true
   
   try {
-    // Créer manuellement le FormData pour mieux contrôler
     const formData = new FormData()
     
-    // Toujours inclure name et email
-    formData.append('name', form.name)
-    formData.append('email', form.email)
-    
-    // Inclure l'avatar seulement si sélectionné
-    if (form.avatar instanceof File) {
-      formData.append('avatar', form.avatar)
+    // N'ajouter que les champs NON VIDES
+    if (form.value.name?.trim()) {
+      formData.append('name', form.value.name.trim())
     }
     
-    // Inclure le mot de passe seulement si rempli
-    if (form.password) {
-      formData.append('password', form.password)
-      formData.append('password_confirmation', form.password_confirmation)
+    if (form.value.email?.trim()) {
+      formData.append('email', form.value.email.trim())
     }
     
-    // Spoof PUT method
+    if (form.value.avatar instanceof File) {
+      formData.append('avatar', form.value.avatar)
+    }
+    
+    if (form.value.password) {
+      formData.append('password', form.value.password)
+      formData.append('password_confirmation', form.value.password_confirmation)
+    }
+    
     formData.append('_method', 'put')
 
-    // Utiliser axios directement
     await axios.post(route('profile.update'), formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -277,12 +279,11 @@ async function submit() {
       }
     })
     
-    // Recharger pour voir les changements
     window.location.reload()
     
   } catch (error) {
     if (error.response?.data?.errors) {
-      form.errors = error.response.data.errors
+      form.value.errors = error.response.data.errors
     }
   } finally {
     processing.value = false

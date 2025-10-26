@@ -45,4 +45,9 @@ public function attendances()
 {
     return $this->hasMany(Attendance::class);
 }
+
+public function historiques()
+{
+    return $this->hasMany(Historique::class);
+}
 }

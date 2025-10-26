@@ -1,150 +1,341 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-emerald-950 py-4 md:py-8 px-3 md:px-4 font-sans">
+  <div class="min-h-screen bg-gradient-to-br from-slate-950 via-blue-900 to-purple-900 py-6 px-4 font-sans">
     <div class="max-w-7xl mx-auto">
-      <!-- Header Premium avec effet glassmorphism -->
-      <div class="relative mb-6 md:mb-8 rounded-2xl md:rounded-3xl bg-gradient-to-r from-emerald-600/20 via-teal-600/20 to-green-600/20 backdrop-blur-xl border border-emerald-400/20 overflow-hidden">
-        <!-- Effet de particules animées -->
-        <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-teal-500/10 animate-pulse"></div>
-        
-        <!-- Icônes flottantes avec animations (masquées sur mobile) -->
-        <div class="hidden md:block absolute left-4 md:left-8 top-4 md:top-8 animate-bounce">
-          <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl md:rounded-2xl flex items-center justify-center shadow-2xl">
-            <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
+      <!-- Header minimaliste avec navigation -->
+      <header class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="text-center md:text-left">
+            <h1 class="text-3xl md:text-5xl font-bold mb-2">
+              <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                FITPLAN
+              </span>
+            </h1>
+            <p class="text-gray-300 text-sm md:text-base">Votre agenda fitness personnalisé</p>
           </div>
+          
+          <!-- Navigation pills -->
+         
         </div>
-        
-        <div class="hidden md:block absolute right-4 md:right-8 top-4 md:top-8 animate-pulse">
-          <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-teal-400 to-green-500 rounded-xl md:rounded-2xl flex items-center justify-center shadow-2xl">
-            <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </div>
-        </div>
+      </header>
 
-        <div class="text-center py-8 md:py-16 relative z-10">
-          <h1 class="text-4xl md:text-6xl font-black mb-3 md:mb-4">
-            <span class="bg-gradient-to-r from-emerald-300 via-teal-300 to-green-300 bg-clip-text text-transparent drop-shadow-2xl">
-              FITNESS
-            </span>
-          </h1>
-          <p class="text-base md:text-xl text-gray-300 font-medium tracking-wide">Planifiez vos séances d'entraînement</p>
-          <div class="mt-4 md:mt-6 h-1 w-24 md:w-32 mx-auto bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full"></div>
-        </div>
-      </div>
-
-      <!-- Bouton de filtre mobile -->
-      <div class="md:hidden mb-4">
-        <button 
-          @click="showMobileFilters = !showMobileFilters"
-          class="w-full flex items-center justify-between px-4 py-3 bg-gray-800/60 backdrop-blur-sm border border-emerald-500/30 rounded-xl text-gray-200"
-        >
-          <span class="font-semibold">Filtres</span>
-          <svg 
-            class="w-5 h-5 text-emerald-400 transition-transform duration-300" 
-            :class="{ 'rotate-180': showMobileFilters }"
-            fill="currentColor" viewBox="0 0 20 20"
-          >
-            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Filtres avec design cards premium -->
-      <div 
-        class="grid gap-4 md:gap-6 mb-6 md:mb-8 transition-all duration-300 overflow-hidden"
-        :class="{
-          'grid-rows-[0fr] md:grid-rows-[1fr]': !showMobileFilters && windowWidth < 768,
-          'grid-rows-[1fr]': showMobileFilters || windowWidth >= 768
-        }"
-      >
-        <div class="min-h-0 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <div class="group">
-            <label class="block text-sm font-semibold text-emerald-300 mb-2 md:mb-3 uppercase tracking-wider">Coach</label>
-            <div class="relative">
-              <select v-model="filters.coach" class="w-full px-4 md:px-6 py-3 md:py-4 bg-gray-800/60 backdrop-blur-sm border border-emerald-500/30 rounded-xl md:rounded-2xl text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 transition-all duration-300 group-hover:border-emerald-400/40 text-sm md:text-base">
-                <option value="" class="bg-gray-900">Tous les coachs</option>
-                <option v-for="coach in coaches" :key="coach" :value="coach" class="bg-gray-900">{{ coach }}</option>
-              </select>
-              <div class="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg class="w-4 h-4 md:w-5 md:h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+      <!-- Contenu dynamique selon l'onglet -->
+      
+      <!-- Onglet Calendrier -->
+      <div v-if="activeTab === 'calendar'" class="transition-all duration-300">
+        <!-- Vos statistiques rapides -->
+        <div class="grid grid-cols-3 md:grid-cols-3 gap-4 mb-8">
+          <div class="bg-gray-800/30 backdrop-blur-sm rounded-2xl p-4 border border-gray-700/50">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                 </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-white">{{ stats.sessionsThisMonth }}</p>
+                <p class="text-xs text-gray-400">Cours ce mois</p>
               </div>
             </div>
           </div>
 
-          <div class="group">
-            <label class="block text-sm font-semibold text-emerald-300 mb-2 md:mb-3 uppercase tracking-wider">Horaire</label>
-            <div class="relative">
-              <select v-model="filters.time" class="w-full px-4 md:px-6 py-3 md:py-4 bg-gray-800/60 backdrop-blur-sm border border-emerald-500/30 rounded-xl md:rounded-2xl text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 transition-all duration-300 group-hover:border-emerald-400/40 text-sm md:text-base">
-                <option value="" class="bg-gray-900">Toutes les heures</option>
-                <option value="morning" class="bg-gray-900">Matin (5h-12h)</option>
-                <option value="afternoon" class="bg-gray-900">Après-midi (12h-18h)</option>
-                <option value="evening" class="bg-gray-900">Soir (18h-24h)</option>
-              </select>
-              <div class="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg class="w-4 h-4 md:w-5 md:h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+          <div class="bg-gray-800/30 backdrop-blur-sm rounded-2xl p-4 border border-gray-700/50">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
               </div>
+              <div>
+                <p class="text-2xl font-bold text-white">{{ stats.attendanceRate }}%</p>
+                <p class="text-xs text-gray-400">Remplissage moyen</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-800/30 backdrop-blur-sm rounded-2xl p-4 border border-gray-700/50">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-cyan-500/20 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-white">{{ stats.coachesCount }}</p>
+                <p class="text-xs text-gray-400">Coachs</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-6">
+          <!-- Sidebar avec filtres -->
+          <div class="lg:col-span-1">
+            <div class="bg-gray-800/40 backdrop-blur-xl rounded-3xl p-6 border border-gray-700/50 sticky top-6">
+              <h3 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+                </svg>
+                Filtres
+              </h3>
+
+              <div class="space-y-6">
+                <!-- Filtre Coach -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-3">Coach</label>
+                  <div class="space-y-2">
+                    <button 
+                      v-for="coach in initialCoaches" 
+                      :key="coach"
+                      @click="toggleCoachFilter(coach)"
+                      class="w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200"
+                      :class="filters.coach === coach 
+                        ? 'bg-blue-500/20 border border-blue-500/30' 
+                        : 'bg-gray-700/50 border border-gray-600/30 hover:border-gray-500'"
+                    >
+                      <span class="text-gray-200 text-sm">{{ coach }}</span>
+                      <div 
+                        class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                        :class="filters.coach === coach 
+                          ? 'bg-blue-500 border-blue-500' 
+                          : 'border-gray-400'"
+                      >
+                        <svg 
+                          v-if="filters.coach === coach" 
+                          class="w-3 h-3 text-white" 
+                          fill="currentColor" 
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Filtre Horaire -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-3">Horaire</label>
+                  <div class="grid grid-cols-2 gap-2">
+                    <button 
+                      v-for="timeSlot in timeSlots" 
+                      :key="timeSlot.value"
+                      @click="toggleTimeFilter(timeSlot.value)"
+                      class="p-3 rounded-xl text-center transition-all duration-200"
+                      :class="filters.time === timeSlot.value 
+                        ? 'bg-purple-500/20 border border-purple-500/30' 
+                        : 'bg-gray-700/50 border border-gray-600/30 hover:border-gray-500'"
+                    >
+                      <div 
+                        class="w-8 h-8 mx-auto mb-2 rounded-full flex items-center justify-center"
+                        :class="filters.time === timeSlot.value 
+                          ? 'bg-purple-500/20 text-purple-300' 
+                          : 'bg-gray-600/50 text-gray-400'"
+                      >
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path :d="timeSlot.icon"/>
+                        </svg>
+                      </div>
+                      <span class="text-xs text-gray-200 block">{{ timeSlot.label }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Bouton reset -->
+                <button 
+                  @click="resetFilters" 
+                  class="w-full py-3 bg-gray-700/50 hover:bg-gray-600/50 border border-gray-600/30 rounded-xl text-gray-300 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                  </svg>
+                  Réinitialiser
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendrier principal -->
+          <div class="lg:col-span-3">
+            <div class="bg-gray-800/40 backdrop-blur-xl rounded-3xl p-6 border border-gray-700/50">
+              <FullCalendar
+                ref="calendar"
+                :options="calendarOptions"
+                class="modern-blue-calendar"
+              />
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Calendrier avec design premium -->
-      <div class="rounded-xl md:rounded-3xl bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 p-4 md:p-8 shadow-2xl">
-        <FullCalendar
-          ref="calendar"
-          :options="calendarOptions"
-          class="premium-green-calendar"
-        />
+      <!-- Onglet Mes Séances -->
+      <div v-if="activeTab === 'workouts'" class="transition-all duration-300">
+        <div class="bg-gray-800/40 backdrop-blur-xl rounded-3xl p-8 border border-gray-700/50">
+          <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+            <svg class="w-6 h-6 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 16H4V8h16v12z"/>
+            </svg>
+            Mes Séances Réservées
+          </h2>
+          
+          <div class="text-center py-12">
+            <svg class="w-16 h-16 text-gray-500 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 16H4V8h16v12z"/>
+            </svg>
+            <p class="text-gray-400">Aucune séance réservée pour le moment</p>
+            <button @click="setActiveTab('calendar')" 
+                    class="mt-4 px-6 py-2 bg-purple-500 hover:bg-purple-600 rounded-xl text-white transition-colors">
+              Parcourir les cours
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Onglet Progression -->
+      <div v-if="activeTab === 'progress'" class="transition-all duration-300">
+        <div class="bg-gray-800/40 backdrop-blur-xl rounded-3xl p-8 border border-gray-700/50">
+          <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+            <svg class="w-6 h-6 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+            </svg>
+            Progression
+          </h2>
+          
+          <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Graphique de progression -->
+            <div class="bg-gray-700/30 rounded-2xl p-6 border border-cyan-500/20">
+              <h3 class="text-lg font-semibold text-white mb-4">Évolution des séances</h3>
+              <div class="h-64 relative">
+                <svg class="w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="none">
+                  <!-- Lignes de grille -->
+                  <line x1="0" y1="40" x2="400" y2="40" stroke="#4b5563" stroke-width="1" stroke-dasharray="4" />
+                  <line x1="0" y1="80" x2="400" y2="80" stroke="#4b5563" stroke-width="1" stroke-dasharray="4" />
+                  <line x1="0" y1="120" x2="400" y2="120" stroke="#4b5563" stroke-width="1" stroke-dasharray="4" />
+                  <line x1="0" y1="160" x2="400" y2="160" stroke="#4b5563" stroke-width="1" stroke-dasharray="4" />
+                  
+                  <!-- Courbe de progression -->
+                  <path 
+                    d="M0,200 L100,150 L200,120 L300,80 L400,50" 
+                    fill="none" 
+                    stroke="#06b6d4" 
+                    stroke-width="3" 
+                    stroke-linecap="round" 
+                  />
+                  
+                  <!-- Points sur la courbe -->
+                  <circle cx="0" cy="200" r="4" fill="#06b6d4" />
+                  <circle cx="100" cy="150" r="4" fill="#06b6d4" />
+                  <circle cx="200" cy="120" r="4" fill="#06b6d4" />
+                  <circle cx="300" cy="80" r="4" fill="#06b6d4" />
+                  <circle cx="400" cy="50" r="4" fill="#06b6d4" />
+                </svg>
+                
+                <!-- Labels des semaines -->
+                <div class="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-400 px-2">
+                  <span>Sem 1</span>
+                  <span>Sem 2</span>
+                  <span>Sem 3</span>
+                  <span>Sem 4</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="space-y-6">
+              <div class="bg-gray-700/30 rounded-2xl p-6 border border-cyan-500/20">
+                <h3 class="text-lg font-semibold text-white mb-4">Objectifs</h3>
+                <div class="space-y-4">
+                  <div>
+                    <div class="flex justify-between text-sm text-gray-400 mb-2">
+                      <span>Séances ce mois</span>
+                      <span>{{ stats.goalsCompleted }}/{{ stats.targetMonthlySessions }}</span>
+                    </div>
+                    <div class="w-full bg-gray-600 rounded-full h-3">
+                      <div 
+                        class="bg-cyan-500 h-3 rounded-full transition-all duration-1000" 
+                        :style="{ width: progressPercentage + '%' }"
+                      ></div>
+                    </div>
+                    <p class="text-cyan-400 text-sm mt-2 text-center" v-if="progressPercentage < 100">
+                      Plus que {{ stats.targetMonthlySessions - stats.goalsCompleted }} séances !
+                    </p>
+                    <p class="text-green-400 text-sm font-semibold mt-2 text-center" v-else>
+                      🎉 Objectif atteint !
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-700/30 rounded-2xl p-6 border border-purple-500/20">
+                <h3 class="text-lg font-semibold text-white mb-4">Résumé du Mois</h3>
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Séances totales</span>
+                    <span class="text-white font-semibold">{{ stats.userReservations }}</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Taux de réussite</span>
+                    <span class="text-white font-semibold">{{ progressPercentage }}%</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Prochaine séance</span>
+                    <span class="text-white font-semibold">Demain</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Modal pour les détails d'événement -->
-    <div v-if="selectedEvent" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 md:p-4" @click="closeModal">
-      <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl md:rounded-3xl p-5 md:p-8 max-w-md w-full border border-emerald-500/30 shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto" @click.stop>
-        <div class="flex items-center justify-between mb-4 md:mb-6">
-          <h3 class="text-xl md:text-2xl font-bold text-emerald-300">{{ selectedEvent.title }}</h3>
-          <button @click="closeModal" class="w-7 h-7 md:w-8 md:h-8 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors">
-            <svg class="w-3 h-3 md:w-4 md:h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+    <div v-if="selectedEvent" class="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4" @click="closeModal">
+      <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-8 max-w-md w-full border border-blue-500/30 shadow-2xl transform transition-all" @click.stop>
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-bold text-white mb-2">{{ selectedEvent.title }}</h3>
+            <div class="flex items-center gap-2 text-blue-400">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
+              <span class="text-sm">{{ formatEventTime(selectedEvent) }}</span>
+            </div>
+          </div>
+          <button @click="closeModal" class="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors">
+            <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
               <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
             </svg>
           </button>
         </div>
         
-        <div class="space-y-3 md:space-y-4">
-          <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/20 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 md:w-5 md:h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-4 bg-gray-700/50 rounded-2xl">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">Coach</p>
+                <p class="text-white font-semibold">{{ selectedEvent.extendedProps?.coach }}</p>
+              </div>
             </div>
-            <div>
-              <p class="text-xs md:text-sm text-gray-400">Coach</p>
-              <p class="text-gray-200 font-semibold text-sm md:text-base">{{ selectedEvent.extendedProps?.coach }}</p>
-            </div>
-          </div>
-          
-          <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 md:w-10 md:h-10 bg-teal-500/20 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 md:w-5 md:h-5 text-teal-400" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </div>
-            <div>
-              <p class="text-xs md:text-sm text-gray-400">Places disponibles</p>
-              <p class="text-gray-200 font-semibold text-sm md:text-base">{{ selectedEvent.extendedProps?.spotsLeft }}/{{ selectedEvent.extendedProps?.maxParticipants }}</p>
+            <div class="text-right">
+              <p class="text-sm text-gray-400">Places</p>
+              <p class="text-white font-semibold">{{ selectedEvent.extendedProps?.spotsLeft }}/{{ selectedEvent.extendedProps?.maxParticipants }}</p>
             </div>
           </div>
           
-          <div class="bg-gray-700/50 rounded-xl md:rounded-2xl p-3 md:p-4 mt-4 md:mt-6">
-            <p class="text-xs md:text-sm text-gray-400 mb-2">Description</p>
-            <p class="text-gray-200 text-sm md:text-base">{{ selectedEvent.extendedProps?.description }}</p>
+          <div class="bg-gray-700/50 rounded-2xl p-4">
+            <p class="text-sm text-gray-400 mb-2">Description</p>
+            <p class="text-white">{{ selectedEvent.extendedProps?.description }}</p>
           </div>
+
+          <button class="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-2xl text-white font-semibold transition-all duration-200 transform hover:scale-[1.02] shadow-lg shadow-blue-500/25">
+            Réserver cette séance
+          </button>
         </div>
       </div>
     </div>
@@ -153,6 +344,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { Link } from '@inertiajs/vue3'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -160,59 +352,47 @@ import interactionPlugin from '@fullcalendar/interaction'
 import frLocale from '@fullcalendar/core/locales/fr'
 
 const props = defineProps({
-  initialEvents: Array,
-  initialCoaches: Array
+  initialEvents: {
+    type: Array,
+    default: () => []
+  },
+  initialCoaches: {
+    type: Array,
+    default: () => []
+  },
+  stats: {
+    type: Object,
+    default: () => ({
+      sessionsThisMonth: 0,
+      attendanceRate: 0,
+      coachesCount: 0,
+      goalsCompleted: 0,
+      targetMonthlySessions: 8,
+      userReservations: 0
+    })
+  }
 })
 
 const calendar = ref(null)
-const events = ref(props.initialEvents || [])
-const coaches = ref(props.initialCoaches || [])
+const events = ref(props.initialEvents)
+const coaches = ref(props.initialCoaches)
 const filters = ref({ coach: '', time: '' })
 const selectedEvent = ref(null)
-const showMobileFilters = ref(false)
+const activeTab = ref('calendar')
 const windowWidth = ref(window.innerWidth)
 
-// Exemple d'événements si aucun n'est fourni
-if (events.value.length === 0) {
-  events.value = [
-    {
-      id: '1',
-      title: 'Yoga Matinal',
-      start: new Date(new Date().setHours(8, 0, 0, 0)),
-      end: new Date(new Date().setHours(9, 0, 0, 0)),
-      extendedProps: {
-        coach: 'Sophie Martin',
-        spotsLeft: 5,
-        maxParticipants: 12,
-        description: 'Séance de yoga doux pour bien commencer la journée'
-      }
-    },
-    {
-      id: '2',
-      title: 'CrossFit Intense',
-      start: new Date(new Date().setHours(18, 0, 0, 0)),
-      end: new Date(new Date().setHours(19, 30, 0, 0)),
-      extendedProps: {
-        coach: 'Marc Dubois',
-        spotsLeft: 3,
-        maxParticipants: 10,
-        description: 'Entraînement intensif pour tous niveaux'
-      }
-    }
-  ]
-}
-
-// Exemple de coachs si aucun n'est fourni
-if (coaches.value.length === 0) {
-  coaches.value = ['Sophie Martin', 'Marc Dubois', 'Laura Petit', 'Thomas Moreau']
-}
+const timeSlots = ref([
+  { value: 'morning', label: 'Matin', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z' },
+  { value: 'afternoon', label: 'Après-midi', icon: 'M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6z' },
+  { value: 'evening', label: 'Soir', icon: 'M2 12c0 5.52 4.48 10 10 10s10-4.48 10-10S17.52 2 12 2 2 6.48 2 12zm10-1h4v2h-4v3l-4-4 4-4v3z' }
+])
 
 const calendarOptions = {
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
   initialView: window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek',
   locale: frLocale,
   headerToolbar: {
-    left: 'prev,next',
+    left: 'prev,next today',
     center: 'title',
     right: window.innerWidth < 768 ? 'timeGridDay,timeGridWeek' : 'dayGridMonth,timeGridWeek,timeGridDay'
   },
@@ -227,8 +407,19 @@ const calendarOptions = {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false
+  },
+  dayHeaderFormat: { weekday: 'short', day: 'numeric' },
+  slotLabelFormat: {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
   }
 }
+
+const progressPercentage = computed(() => {
+  if (!props.stats.targetMonthlySessions) return 0
+  return Math.round((props.stats.goalsCompleted / props.stats.targetMonthlySessions) * 100)
+})
 
 const filteredEvents = computed(() => {
   return events.value.filter(event => {
@@ -269,12 +460,36 @@ watch(windowWidth, (newWidth) => {
   }
 })
 
+
+
 function handleEventClick(info) {
   selectedEvent.value = info.event
 }
 
 function closeModal() {
   selectedEvent.value = null
+}
+
+function toggleCoachFilter(coach) {
+  filters.value.coach = filters.value.coach === coach ? '' : coach
+}
+
+function toggleTimeFilter(time) {
+  filters.value.time = filters.value.time === time ? '' : time
+}
+
+function resetFilters() {
+  filters.value = { coach: '', time: '' }
+}
+function setActiveTab(tab) {
+  console.log('Bouton cliqué, tab:', tab) // ← AJOUTEZ CETTE LIGNE
+  activeTab.value = tab
+}
+
+function formatEventTime(event) {
+  const start = new Date(event.start)
+  const end = new Date(event.end)
+  return `${start.getHours().toString().padStart(2, '0')}:${start.getMinutes().toString().padStart(2, '0')} - ${end.getHours().toString().padStart(2, '0')}:${end.getMinutes().toString().padStart(2, '0')}`
 }
 
 function handleResize() {
@@ -288,163 +503,44 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
 })
+
 </script>
 
 <style>
-.premium-green-calendar {
-  --fc-border-color: rgba(16, 185, 129, 0.2);
-  --fc-page-bg-color: transparent;
-  --fc-today-bg-color: rgba(16, 185, 129, 0.1);
+.modern-blue-calendar .fc-toolbar {
+  @apply text-white;
 }
 
-.premium-green-calendar .fc-toolbar-title {
-  font-weight: 900;
-  font-size: 1.5rem;
-  background: linear-gradient(135deg, #10b981, #14b8a6, #22c55e);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  letter-spacing: -0.02em;
+.modern-blue-calendar .fc-toolbar-title {
+  @apply text-xl font-semibold;
 }
 
-@media (min-width: 768px) {
-  .premium-green-calendar .fc-toolbar-title {
-    font-size: 2rem;
-  }
+.modern-blue-calendar .fc-button {
+  @apply bg-gray-700 border-gray-600 text-white hover:bg-gray-600 transition-colors;
 }
 
-.premium-green-calendar .fc-event {
-  background: linear-gradient(135deg, #10b981, #14b8a6) !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-  border-radius: 8px !important;
-  font-size: 0.75rem !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-  padding: 2px 4px;
-  margin: 1px;
+.modern-blue-calendar .fc-button-active {
+  @apply bg-blue-500 border-blue-500;
 }
 
-@media (min-width: 768px) {
-  .premium-green-calendar .fc-event {
-    border-radius: 12px !important;
-    font-size: 0.85rem !important;
-    padding: 4px 6px;
-    margin: 2px;
-  }
+.modern-blue-calendar .fc-daygrid-day-number,
+.modern-blue-calendar .fc-col-header-cell-cushion {
+  @apply text-white;
 }
 
-.premium-green-calendar .fc-event:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-  background: linear-gradient(135deg, #059669, #0d9488) !important;
+.modern-blue-calendar .fc-daygrid-day {
+  @apply bg-gray-700/20 border-gray-600/30;
 }
 
-.premium-green-calendar .fc-col-header-cell {
-  background: rgba(31, 41, 55, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+.modern-blue-calendar .fc-day-today {
+  @apply bg-blue-500/10;
 }
 
-.premium-green-calendar .fc-col-header-cell-cushion {
-  text-transform: uppercase;
-  font-weight: 800;
-  color: #d1fae5;
-  padding: 8px 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
+.modern-blue-calendar .fc-timegrid-slot {
+  @apply bg-gray-700/10 border-gray-600/20;
 }
 
-@media (min-width: 768px) {
-  .premium-green-calendar .fc-col-header-cell-cushion {
-    padding: 12px 0;
-    font-size: 0.85rem;
-  }
-}
-
-.premium-green-calendar .fc-daygrid-day-number,
-.premium-green-calendar .fc-timegrid-slot-label {
-  font-weight: 700;
-  color: #e5e7eb;
-  font-size: 0.8rem;
-}
-
-.premium-green-calendar .fc-daygrid-day {
-  background: rgba(17, 24, 39, 0.6);
-  border: 1px solid rgba(16, 185, 129, 0.1);
-  transition: all 0.3s ease;
-}
-
-.premium-green-calendar .fc-daygrid-day:hover {
-  background: rgba(16, 185, 129, 0.05);
-}
-
-.premium-green-calendar .fc-day-today {
-  background: rgba(16, 185, 129, 0.15) !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-}
-
-.premium-green-calendar .fc-button {
-  background: linear-gradient(135deg, #374151, #4b5563) !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-  color: #f3f4f6 !important;
-  text-transform: uppercase;
-  font-weight: 700;
-  border-radius: 8px !important;
-  padding: 6px 12px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
-}
-
-@media (min-width: 768px) {
-  .premium-green-calendar .fc-button {
-    border-radius: 12px !important;
-    padding: 8px 16px !important;
-    font-size: 0.85rem;
-  }
-}
-
-.premium-green-calendar .fc-button:hover {
-  background: linear-gradient(135deg, #10b981, #14b8a6) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-}
-
-.premium-green-calendar .fc-button:focus {
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3) !important;
-}
-
-.premium-green-calendar .fc-button-active {
-  background: linear-gradient(135deg, #059669, #0d9488) !important;
-}
-
-/* Améliorations pour mobile */
-@media (max-width: 767px) {
-  .premium-green-calendar .fc-toolbar {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .premium-green-calendar .fc-toolbar-chunk {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .premium-green-calendar .fc-header-toolbar {
-    margin-bottom: 10px !important;
-  }
-  
-  .premium-green-calendar .fc-timegrid-slot-label {
-    font-size: 0.7rem;
-  }
-}
-
-/* Animation pour les filtres mobiles */
-.grid {
-  transition: grid-template-rows 0.3s ease;
+.modern-blue-calendar .fc-timegrid-now-indicator-line {
+  @apply bg-red-500;
 }
 </style>
